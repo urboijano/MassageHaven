@@ -1,0 +1,188 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 97.3%;
+    --foreground: 210 11% 15%;
+    --muted: 60 4.8% 95.9%;
+    --muted-foreground: 25 5.3% 44.7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14.3% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14.3% 4.1%;
+    --border: 20 5.9% 90%;
+    --input: 20 5.9% 90%;
+    --primary: 211 42% 24%;
+    --primary-foreground: 211 100% 99%;
+    --secondary: 228 71% 97.1%;
+    --secondary-foreground: 24 9.8% 10%;
+    --accent: 84 17% 52%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --ring: 20 14.3% 4.1%;
+    --radius: 0.5rem;
+    
+    /* Chart colors */
+    --chart-1: 84 17% 52%;
+    --chart-2: 211 42% 24%;
+    --chart-3: 228 71% 97.1%;
+    --chart-4: 0 84.2% 60.2%;
+    --chart-5: 25 5.3% 44.7%;
+  }
+  
+  .dark {
+    --background: 211 42% 24%;
+    --foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --primary: 211 42% 24%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 228 71% 97.1%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 84 17% 52%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --ring: 240 4.9% 83.9%;
+    --radius: 0.5rem;
+  }
+}
+
+/* Base styles */
+body {
+  font-family: 'Lato', sans-serif;
+  color: #333333;
+  background-color: #F8F9FA;
+  @apply antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Standard transitions */
+.transition-standard {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Utility classes */
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Navbar animation */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #8A9B6E;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Hero section */
+.hero-overlay {
+  @apply absolute inset-0 bg-primary bg-opacity-50;
+}
+
+.hero-content {
+  @apply relative z-10 mx-auto px-6 py-32 h-full flex items-center;
+}
+
+/* Service card styling */
+.service-card {
+  @apply rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-standard;
+}
+
+.service-card-img {
+  @apply relative h-64 overflow-hidden;
+}
+
+.service-card-img img {
+  @apply w-full h-full object-cover transform group-hover:scale-105 transition-standard;
+}
+
+.service-card-overlay {
+  @apply absolute inset-0 bg-primary bg-opacity-20 group-hover:bg-opacity-10 transition-standard;
+}
+
+/* Testimonial card */
+.testimonial-card {
+  @apply bg-secondary bg-opacity-30 rounded-lg p-8 shadow-md;
+}
+
+.testimonial-nav-button {
+  @apply absolute top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow-md 
+         flex items-center justify-center text-primary hover:text-accent 
+         focus:outline-none transition-standard;
+}
+
+/* Admin layout */
+.admin-sidebar {
+  @apply bg-white w-full md:w-64 shadow-md md:min-h-screen p-4;
+}
+
+.admin-tab-btn {
+  @apply w-full flex items-center space-x-3 px-4 py-3 rounded text-left 
+         text-primary hover:bg-secondary transition-standard focus:outline-none;
+}
+
+.admin-tab-btn.active {
+  @apply bg-secondary;
+}
+
+.admin-content {
+  @apply flex-1 p-6 bg-background;
+}
+
+/* Booking form */
+.booking-form {
+  @apply space-y-6;
+}
+
+.form-group {
+  @apply space-y-1;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+.form-input {
+  @apply w-full p-3 border border-gray-300 rounded-md focus:ring focus:ring-accent focus:ring-opacity-50 focus:border-accent transition-standard;
+}
+
+/* Admin stats card */
+.admin-stat-card {
+  @apply bg-white rounded-lg shadow-md p-6;
+}
+
+.stat-icon-wrapper {
+  @apply rounded-full p-3 mr-4;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .container {
+    @apply px-4;
+  }
+}
