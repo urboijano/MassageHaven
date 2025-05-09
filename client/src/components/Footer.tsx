@@ -1,6 +1,22 @@
 import { Link } from "wouter";
+import { useLocation } from 'wouter';
+import { useQuery } from "@tanstack/react-query";
+import { Settings } from "@shared/schema";
 
 export default function Footer() {
+  const [location] = useLocation();
+
+  const handleScroll = (e, id) => {
+    if (location === '/') {
+      e.preventDefault();
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const { data: settings } = useQuery<Settings>({
+    queryKey: ["/api/settings"],
+  });
+
   return (
     <footer className="bg-primary text-white py-12">
       <div className="container mx-auto px-6">
@@ -31,68 +47,86 @@ export default function Footer() {
               </a>
             </div>
           </div>
-          
+
           <div>
             <h4 className="font-bold text-lg mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              <li><Link href="/" className="opacity-80 hover:opacity-100 hover:text-accent transition-standard">Home</Link></li>
-              <li><Link href="/#services" className="opacity-80 hover:opacity-100 hover:text-accent transition-standard">Services</Link></li>
-              <li><Link href="/#about" className="opacity-80 hover:opacity-100 hover:text-accent transition-standard">About Us</Link></li>
-              <li><Link href="/#testimonials" className="opacity-80 hover:opacity-100 hover:text-accent transition-standard">Testimonials</Link></li>
+              <li><a href="/" onClick={(e) => handleScroll(e, 'home')} className="opacity-80 hover:opacity-100 hover:text-accent transition-standard">Home</a></li>
+              <li><a href="/#services" onClick={(e) => handleScroll(e, 'services')} className="opacity-80 hover:opacity-100 hover:text-accent transition-standard">Services</a></li>
+              <li><a href="/#about" onClick={(e) => handleScroll(e, 'about')} className="opacity-80 hover:opacity-100 hover:text-accent transition-standard">About Us</a></li>
+              <li><a href="/#testimonials" onClick={(e) => handleScroll(e, 'testimonials')} className="opacity-80 hover:opacity-100 hover:text-accent transition-standard">Testimonials</a></li>
               <li><Link href="/booking" className="opacity-80 hover:opacity-100 hover:text-accent transition-standard">Book Now</Link></li>
             </ul>
           </div>
-          
-          <div>
+
+          <div id="contact"> {/* Added ID for contact section */}
             <h4 className="font-bold text-lg mb-4">Contact Us</h4>
             <ul className="space-y-2">
               <li className="flex items-start">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mt-1 mr-3 text-accent" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
-                <span className="opacity-80">123 Serenity Lane, Wellness District, City</span>
+                <span className="opacity-80">{settings?.address}</span>
               </li>
               <li className="flex items-start">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mt-1 mr-3 text-accent" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                <span className="opacity-80">(555) 123-4567</span>
+                <span className="opacity-80">{settings?.phone}</span>
               </li>
               <li className="flex items-start">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mt-1 mr-3 text-accent" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
-                <span className="opacity-80">info@massagehaven.com</span>
+                <span className="opacity-80">{settings?.contactEmail}</span>
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h4 className="font-bold text-lg mb-4">Hours</h4>
             <ul className="space-y-2">
               <li className="flex justify-between">
                 <span className="opacity-80">Monday - Friday</span>
-                <span className="opacity-80">9:00 AM - 8:00 PM</span>
+                <span className="opacity-80">{settings?.mondayToFridayEnabled ? `${settings?.mondayToFridayOpen} - ${settings?.mondayToFridayClose}` : 'Closed'}</span>
               </li>
               <li className="flex justify-between">
                 <span className="opacity-80">Saturday</span>
-                <span className="opacity-80">9:00 AM - 6:00 PM</span>
+                <span className="opacity-80">{settings?.saturdayEnabled ? `${settings?.saturdayOpen} - ${settings?.saturdayClose}` : 'Closed'}</span>
               </li>
               <li className="flex justify-between">
                 <span className="opacity-80">Sunday</span>
-                <span className="opacity-80">10:00 AM - 5:00 PM</span>
+                <span className="opacity-80">{settings?.sundayEnabled ? `${settings?.sundayOpen} - ${settings?.sundayClose}` : 'Closed'}</span>
               </li>
             </ul>
           </div>
         </div>
-        
+
         <div className="border-t border-gray-700 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="opacity-80 text-sm mb-4 md:mb-0">© {new Date().getFullYear()} Massage Haven. All rights reserved.</p>
           <div className="flex space-x-6">
-            <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-standard">Privacy Policy</a>
-            <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-standard">Terms of Service</a>
-            <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-standard">Cookie Policy</a>
+            <Link 
+              href="/privacy-policy" 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="text-sm opacity-80 hover:opacity-100 transition-standard"
+            >
+              Privacy Policy
+            </Link>
+            <Link 
+              href="/terms-of-service" 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="text-sm opacity-80 hover:opacity-100 transition-standard"
+            >
+              Terms of Service
+            </Link>
+            <Link 
+              href="/cookie-policy" 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="text-sm opacity-80 hover:opacity-100 transition-standard"
+            >
+              Cookie Policy
+            </Link>
           </div>
         </div>
       </div>

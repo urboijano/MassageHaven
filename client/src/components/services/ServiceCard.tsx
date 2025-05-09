@@ -9,19 +9,11 @@ interface ServiceCardProps {
 
 export default function ServiceCard({ service }: ServiceCardProps) {
   return (
-    <Card className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-standard group">
-      <div className="relative h-64 overflow-hidden">
-        <img 
-          className="w-full h-full object-cover transform group-hover:scale-105 transition-standard"
-          src={service.imageUrl} 
-          alt={service.name} 
-        />
-        <div className="absolute inset-0 bg-primary bg-opacity-20 group-hover:bg-opacity-10 transition-standard"></div>
-      </div>
+    <Card className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-standard group bg-secondary bg-opacity-5">
       <div className="p-6">
-        <h3 className="text-xl font-playfair font-bold text-primary mb-2">{service.name}</h3>
-        <p className="text-gray-600 mb-4">{service.description}</p>
-        <div className="flex justify-between items-center">
+        <h3 className="text-xl font-playfair font-bold text-primary mb-3">{service.name}</h3>
+        <p className="text-gray-600 mb-4 min-h-[60px]">{service.description}</p>
+        <div className="flex justify-between items-center pt-4 border-t border-secondary border-opacity-20">
           <span className="text-accent font-bold">₱{service.price} / {service.duration} min</span>
           <Link href="/booking">
             <Button variant="link" className="text-primary hover:text-accent font-medium flex items-center">

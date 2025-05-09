@@ -1,9 +1,12 @@
 import { Switch, Route } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Suspense } from "react";
+import PageLoading from "@/components/ui/page-loading";
 import NotFound from "@/pages/not-found";
 import LandingPage from "@/pages/LandingPage";
 import BookingPage from "@/pages/BookingPage";
+import ServicesPage from "@/pages/ServicesPage";
 import LoginPage from "@/pages/admin/LoginPage";
 import AdminLayout from "@/layouts/AdminLayout";
 import Dashboard from "@/pages/admin/Dashboard";
@@ -18,10 +21,10 @@ import { useAuth } from "@/contexts/AuthContext";
 const AdminDashboardPage = () => {
   const auth = useAuth();
   const isAdmin = auth?.isAdmin || localStorage.getItem("isAdmin") === "true";
-  
+
   // Add a console log to help with debugging
   console.log("AdminDashboardPage - isAdmin:", isAdmin);
-  
+
   return isAdmin ? (
     <AdminLayout>
       <Dashboard />
@@ -35,7 +38,7 @@ const AdminDashboardPage = () => {
 const AdminBookingsPage = () => {
   const auth = useAuth();
   const isAdmin = auth?.isAdmin || localStorage.getItem("isAdmin") === "true";
-  
+
   return isAdmin ? (
     <AdminLayout>
       <Bookings />
@@ -49,7 +52,7 @@ const AdminBookingsPage = () => {
 const AdminServicesPage = () => {
   const auth = useAuth();
   const isAdmin = auth?.isAdmin || localStorage.getItem("isAdmin") === "true";
-  
+
   return isAdmin ? (
     <AdminLayout>
       <Services />
@@ -63,7 +66,7 @@ const AdminServicesPage = () => {
 const AdminServiceStatsPage = () => {
   const auth = useAuth();
   const isAdmin = auth?.isAdmin || localStorage.getItem("isAdmin") === "true";
-  
+
   return isAdmin ? (
     <AdminLayout>
       <ServiceStats />
@@ -77,7 +80,7 @@ const AdminServiceStatsPage = () => {
 const AdminStaffPage = () => {
   const auth = useAuth();
   const isAdmin = auth?.isAdmin || localStorage.getItem("isAdmin") === "true";
-  
+
   return isAdmin ? (
     <AdminLayout>
       <Staff />
@@ -91,7 +94,7 @@ const AdminStaffPage = () => {
 const AdminSettingsPage = () => {
   const auth = useAuth();
   const isAdmin = auth?.isAdmin || localStorage.getItem("isAdmin") === "true";
-  
+
   return isAdmin ? (
     <AdminLayout>
       <Settings />
@@ -101,15 +104,22 @@ const AdminSettingsPage = () => {
   );
 };
 
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import CookiePolicy from './pages/CookiePolicy';
+
+
 function App() {
   return (
     <TooltipProvider>
       <Toaster />
-      <Switch>
-        <Route path="/" component={LandingPage} />
+      <Suspense fallback={<PageLoading />}>
+        <Switch>
+          <Route path="/" component={LandingPage} />
+        <Route path="/services" component={ServicesPage} />
         <Route path="/booking" component={BookingPage} />
         <Route path="/admin/login" component={LoginPage} />
-        
+
         {/* Admin routes with individual handler components */}
         <Route path="/admin" component={AdminDashboardPage} />
         <Route path="/admin/bookings" component={AdminBookingsPage} />
@@ -117,10 +127,14 @@ function App() {
         <Route path="/admin/service-stats" component={AdminServiceStatsPage} />
         <Route path="/admin/staff" component={AdminStaffPage} />
         <Route path="/admin/settings" component={AdminSettingsPage} />
-        
+        <Route path="/privacy-policy" component={PrivacyPolicy} />
+        <Route path="/terms-of-service" component={TermsOfService} />
+        <Route path="/cookie-policy" component={CookiePolicy} />
+
         {/* Fallback to 404 */}
         <Route component={NotFound} />
       </Switch>
+      </Suspense>
     </TooltipProvider>
   );
 }

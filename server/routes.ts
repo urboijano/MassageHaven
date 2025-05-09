@@ -1,6 +1,26 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadDir = path.join(process.cwd(), 'client/public/images');
+      // Create directory if it doesn't exist
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+      cb(null, req.body.filename);
+    }
+  })
+});
 import { 
   insertServiceSchema, 
   insertStaffSchema, 
@@ -272,6 +292,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Settings
+  // File upload endpoint
+  app.post("/api/upload", upload.single('file'), (req: Request, res: Response) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    res.json({ filename: req.file.filename });
+  });
+
   app.get("/api/settings", async (req: Request, res: Response) => {
     try {
       const settings = await storage.getSettings();
@@ -344,14 +372,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Recent Bookings
+  // Pending Bookings
   app.get("/api/admin/bookings/recent", async (req: Request, res: Response) => {
     try {
       const bookings = await storage.getAllBookings();
       const services = await storage.getAllServices();
       
-      // Sort by date desc and take the most recent 5
-      const recentBookings = bookings
+      // Filter for pending bookings, sort by date desc and take the most recent 5
+      const pendingBookings = bookings
+        .filter(booking => booking.status === "pending")
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 5)
         .map(booking => {
@@ -362,7 +391,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         });
       
-      res.json(recentBookings);
+      res.json(pendingBookings);
     } catch (error) {
       res.status(500).json({ message: "Error fetching recent bookings" });
     }
@@ -412,39 +441,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Popular Services
-  app.get("/api/admin/services/popular", async (req: Request, res: Response) => {
+  // Service Statistics
+  app.get("/api/admin/services/stats", async (req: Request, res: Response) => {
     try {
       const services = await storage.getAllServices();
       const bookings = await storage.getAllBookings();
       
       // Count bookings per service
-      const serviceCounts = services.map(service => {
-        const count = bookings.filter(b => b.serviceId === service.id).length;
+      const serviceStats = services.map(service => {
+        const serviceBookings = bookings.filter(b => b.serviceId === service.id);
+        const count = serviceBookings.length;
+        const completedCount = serviceBookings.filter(b => b.status === "completed").length;
+        
         return {
           id: service.id,
           name: service.name,
           price: service.price,
           duration: service.duration,
-          count,
-          percentage: 0 // Will calculate below
+          totalBookings: count,
+          completedBookings: completedCount,
+          percentage: Math.round((count / (bookings.length || 1)) * 100)
         };
       });
       
-      // Calculate percentages
-      const totalBookings = bookings.length || 1; // Avoid division by zero
-      serviceCounts.forEach(service => {
-        service.percentage = Math.round((service.count / totalBookings) * 100);
-      });
+      // Sort by total bookings
+      serviceStats.sort((a, b) => b.totalBookings - a.totalBookings);
       
-      // Sort by count and take top 4
-      const popularServices = serviceCounts
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 4);
-      
-      res.json(popularServices);
+      res.json(serviceStats);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching popular services" });
+      res.status(500).json({ message: "Error fetching service statistics" });
     }
   });
 

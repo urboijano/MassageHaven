@@ -25,7 +25,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center">
             <span className="text-primary font-playfair text-2xl font-bold">Massage Haven</span>
           </Link>
-          
+
           {/* Mobile menu button */}
           <div className="flex md:hidden">
             <button
@@ -39,30 +39,75 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-        
+
         {/* Desktop Menu */}
         <div className={`${mobileMenuOpen ? 'block' : 'hidden'} md:flex items-center`}>
           <div className="flex flex-col md:flex-row md:mx-6">
-            <Link href="/" className={`my-2 text-sm font-medium md:mx-4 md:my-0 nav-link ${isActive('/')}`}>
+            <a 
+              href="/" 
+              onClick={(e) => {
+                if (location === '/') {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+              className={`my-2 text-sm font-medium md:mx-4 md:my-0 nav-link ${isActive('/')}`}
+            >
               Home
-            </Link>
-            <Link href="/#services" className={`my-2 text-sm font-medium md:mx-4 md:my-0 nav-link ${isActive('/#services')}`}>
+            </a>
+            <a 
+              href="/#services"
+              onClick={(e) => {
+                if (location === '/') {
+                  e.preventDefault();
+                  document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className={`my-2 text-sm font-medium md:mx-4 md:my-0 nav-link ${isActive('/#services')}`}
+            >
               Services
-            </Link>
-            <Link href="/#about" className={`my-2 text-sm font-medium md:mx-4 md:my-0 nav-link ${isActive('/#about')}`}>
+            </a>
+            <a 
+              href="/#about"
+              onClick={(e) => {
+                if (location === '/') {
+                  e.preventDefault();
+                  document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className={`my-2 text-sm font-medium md:mx-4 md:my-0 nav-link ${isActive('/#about')}`}
+            >
               About
-            </Link>
-            <Link href="/#testimonials" className={`my-2 text-sm font-medium md:mx-4 md:my-0 nav-link ${isActive('/#testimonials')}`}>
+            </a>
+            <a 
+              href="/#testimonials"
+              onClick={(e) => {
+                if (location === '/') {
+                  e.preventDefault();
+                  document.getElementById('testimonials')?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className={`my-2 text-sm font-medium md:mx-4 md:my-0 nav-link ${isActive('/#testimonials')}`}
+            >
               Testimonials
-            </Link>
-            <Link href="/#contact" className={`my-2 text-sm font-medium md:mx-4 md:my-0 nav-link ${isActive('/#contact')}`}>
+            </a>
+            <a 
+              href="/#contact"
+              onClick={(e) => {
+                if (location === '/') {
+                  e.preventDefault();
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className={`my-2 text-sm font-medium md:mx-4 md:my-0 nav-link ${isActive('/#contact')}`}
+            >
               Contact
-            </Link>
+            </a>
             <Link href="/booking" className={`my-2 text-sm font-medium md:mx-4 md:my-0 nav-link ${isActive('/booking')}`}>
               Book Now
             </Link>
           </div>
-          
+
           <div className="flex items-center py-2 -mx-1 md:mx-0">
             {isAdmin ? (
               <Link href="/admin">

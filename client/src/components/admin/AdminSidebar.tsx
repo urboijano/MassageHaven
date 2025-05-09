@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import PageLoading from "@/components/ui/page-loading";
 
 interface SidebarItem {
   label: string;
@@ -11,19 +12,22 @@ interface SidebarItem {
 
 export default function AdminSidebar() {
   const [location] = useLocation();
-  
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
   // Safely access auth context for logout function using optional chaining
   const auth = useAuth();
-  
+
   // Custom logout function that ensures we navigate to the homepage
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
     if (auth?.logout) {
-      auth.logout();
+      await auth.logout();
     } else {
       localStorage.removeItem("isAdmin");
     }
     // Always navigate to landing page after logout
     window.location.href = "/";
+    setIsLoggingOut(false);
   };
 
   const sidebarItems: SidebarItem[] = [
@@ -79,13 +83,14 @@ export default function AdminSidebar() {
 
   return (
     <div className="admin-sidebar">
+      {isLoggingOut && <PageLoading />}
       <div className="mb-8">
         <Link href="/" className="block text-primary font-playfair text-xl font-bold mb-4">
           Massage Haven
         </Link>
         <div className="text-sm text-gray-600">Admin Panel</div>
       </div>
-      
+
       <nav>
         <ul className="space-y-2">
           {sidebarItems.map((item) => (
@@ -98,7 +103,7 @@ export default function AdminSidebar() {
           ))}
         </ul>
       </nav>
-      
+
       <div className="mt-8 pt-6 border-t border-gray-200">
         <Button 
           variant="destructive" 

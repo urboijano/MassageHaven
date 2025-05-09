@@ -18,6 +18,8 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+import PageLoading from "@/components/ui/page-loading";
+
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [, setLocation] = useLocation();
@@ -43,39 +45,47 @@ export default function LoginPage() {
         const success = await login(values.username, values.password);
         if (success) {
           console.log("Login successful, redirecting to admin dashboard");
-          // Force a small delay to ensure state is updated before redirect
-          setTimeout(() => {
-            window.location.href = "/admin";
-          }, 500);
-        }
-      } else {
-        // Fallback implementation if the context's login function isn't available
-        if (values.username === "admin" && values.password === "password") {
-          toast({
-            title: "Login successful",
-            description: "Welcome to Massage Haven Admin",
-          });
-          localStorage.setItem("isAdmin", "true");
-          
-          // Force a small delay to ensure state is updated before redirect
-          setTimeout(() => {
-            window.location.href = "/admin";
-          }, 500);
-        } else {
-          toast({
-            title: "Login failed",
-            description: "Invalid username or password",
-            variant: "destructive",
-          });
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Show loading for at least 1 second
+          window.location.href = "/admin";
+          return;
         }
       }
+      
+      // Fallback implementation if the context's login function isn't available
+      if (values.username === "admin" && values.password === "password") {
+        toast({
+          title: "Login successful",
+          description: "Welcome to Massage Haven Admin",
+        });
+        localStorage.setItem("isAdmin", "true");
+        
+        // Force a small delay to ensure state is updated before redirect
+        setTimeout(() => {
+          window.location.href = "/admin";
+        }, 500);
+      } else {
+        toast({
+          title: "Login failed",
+          description: "Invalid username or password",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast({
+        title: "Login failed",
+        description: "An error occurred during login",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+    <>
+      {loading && <PageLoading />}
+      <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <Link href="/">
@@ -145,5 +155,6 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

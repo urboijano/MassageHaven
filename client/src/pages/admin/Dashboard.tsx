@@ -8,21 +8,22 @@ export default function Dashboard() {
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/admin/stats"],
   });
-  
+
   // Fetch recent bookings
   const { data: recentBookings, isLoading: bookingsLoading } = useQuery({
     queryKey: ["/api/admin/bookings/recent"],
   });
 
-  // Fetch popular services
+  // Fetch service statistics
   const { data: popularServices, isLoading: servicesLoading } = useQuery({
-    queryKey: ["/api/admin/services/popular"],
+    queryKey: ["/api/admin/services/stats"],
+    select: (services) => services?.slice(0, 4) // Take top 4 most popular services
   });
 
   return (
     <div>
       <h2 className="text-2xl font-playfair font-bold text-primary mb-6">Dashboard Overview</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card className="admin-stat-card">
           <div className="flex items-center">
@@ -39,7 +40,7 @@ export default function Dashboard() {
             </div>
           </div>
         </Card>
-        
+
         <Card className="admin-stat-card">
           <div className="flex items-center">
             <div className="rounded-full bg-blue-100 p-3 mr-4">
@@ -56,7 +57,7 @@ export default function Dashboard() {
             </div>
           </div>
         </Card>
-        
+
         <Card className="admin-stat-card">
           <div className="flex items-center">
             <div className="rounded-full bg-green-100 p-3 mr-4">
@@ -72,7 +73,7 @@ export default function Dashboard() {
             </div>
           </div>
         </Card>
-        
+
         <Card className="admin-stat-card">
           <div className="flex items-center">
             <div className="rounded-full bg-purple-100 p-3 mr-4">
@@ -89,15 +90,15 @@ export default function Dashboard() {
           </div>
         </Card>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardContent className="pt-6">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-primary text-lg">Recent Bookings</h3>
+              <h3 className="font-bold text-primary text-lg">Pending Bookings</h3>
               <Link href="/admin/bookings" className="text-accent hover:underline text-sm">View All</Link>
             </div>
-            
+
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -146,14 +147,14 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-bold text-primary text-lg">Popular Services</h3>
               <Link href="/admin/service-stats" className="text-accent hover:underline text-sm">Details</Link>
             </div>
-            
+
             <div className="space-y-4">
               {servicesLoading ? (
                 <div className="py-4 text-center">Loading services...</div>

@@ -3,9 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 export default function ServiceStats() {
-  // Fetch popular services
-  const { data: popularServices, isLoading } = useQuery({
-    queryKey: ["/api/admin/services/popular"],
+  // Fetch all services with their popularity
+  const { data: serviceStats, isLoading } = useQuery({
+    queryKey: ["/api/admin/services/stats"],
   });
 
   // Custom tooltip for the chart
@@ -33,7 +33,7 @@ export default function ServiceStats() {
   return (
     <div>
       <h2 className="text-2xl font-playfair font-bold text-primary mb-6">Service Popularity Statistics</h2>
-      
+
       <Card className="mb-8">
         <CardHeader>
           <CardTitle className="text-lg">Service Popularity Overview</CardTitle>
@@ -47,7 +47,7 @@ export default function ServiceStats() {
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={popularServices}
+                  data={serviceStats}
                   margin={{
                     top: 5,
                     right: 30,
@@ -67,7 +67,7 @@ export default function ServiceStats() {
           </div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Detailed Service Popularity</CardTitle>
@@ -89,12 +89,12 @@ export default function ServiceStats() {
                   <tr>
                     <td colSpan={5} className="px-6 py-4 text-center">Loading service statistics...</td>
                   </tr>
-                ) : popularServices?.length === 0 ? (
+                ) : serviceStats?.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-6 py-4 text-center">No service data available</td>
                   </tr>
                 ) : (
-                  popularServices?.map((service: any, index: number) => (
+                  serviceStats?.map((service: any, index: number) => (
                     <tr key={service.id} className="border-t border-gray-100 hover:bg-gray-50">
                       <td className="px-6 py-4 text-sm">{index + 1}</td>
                       <td className="px-6 py-4 font-medium">{service.name}</td>

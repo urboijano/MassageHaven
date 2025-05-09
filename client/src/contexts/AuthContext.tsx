@@ -14,6 +14,7 @@ const AuthContext = createContext<AuthContextType>({});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
@@ -57,19 +58,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Logout function
-  const logout = () => {
+  const logout = async () => {
+    setIsLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Show loading for at least 1 second
     setIsAdmin(false);
     localStorage.removeItem("isAdmin");
-    setLocation("/");
     toast({
       title: "Logged out",
       description: "You have been logged out successfully",
     });
+    setLocation("/");
+    setIsLoading(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isAdmin, login, logout }}>
+    <AuthContext.Provider value={{ isAdmin, login, logout, isLoading }}>
       {children}
+      {isLoading && <PageLoading />}
     </AuthContext.Provider>
   );
 }

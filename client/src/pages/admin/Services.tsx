@@ -28,6 +28,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Service } from "@shared/schema";
+import { ImageResizer } from "@/components/ui/image-resizer";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 // Form schema for service creation and editing
 const serviceFormSchema = z.object({
@@ -46,7 +48,9 @@ export default function Services() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  
+  const [tempImageUrl, setTempImageUrl] = useState(''); 
+  const [isCropperOpen, setIsCropperOpen] = useState(false); 
+
   const { toast } = useToast();
 
   // Fetch services
@@ -61,16 +65,14 @@ export default function Services() {
       return response.json();
     },
     onSuccess: (newService) => {
-      // Immediately update the cache with the new service
       queryClient.setQueryData<Service[]>(["/api/services"], (oldData) => {
         if (!oldData) return [newService];
         return [...oldData, newService];
       });
-      
-      // Still invalidate to ensure consistency with server
+
       queryClient.invalidateQueries({ queryKey: ["/api/services"] });
       queryClient.invalidateQueries({ queryKey: ["/api/services/featured"] });
-      
+
       setIsCreateDialogOpen(false);
       toast({
         title: "Service created",
@@ -93,21 +95,18 @@ export default function Services() {
       return response.json();
     },
     onSuccess: (updatedService) => {
-      // Immediately update the cache with the updated service
       queryClient.setQueryData<Service[]>(["/api/services"], (oldData) => {
         if (!oldData) return [updatedService];
-        
+
         return oldData.map(service => 
           service.id === updatedService.id ? updatedService : service
         );
       });
-      
-      // Also update featured services if needed
+
       queryClient.invalidateQueries({ queryKey: ["/api/services/featured"] });
-      
-      // Still invalidate to ensure consistency with server
+
       queryClient.invalidateQueries({ queryKey: ["/api/services"] });
-      
+
       setIsEditDialogOpen(false);
       toast({
         title: "Service updated",
@@ -127,21 +126,18 @@ export default function Services() {
   const deleteService = useMutation({
     mutationFn: async (id: number) => {
       await apiRequest("DELETE", `/api/services/${id}`);
-      return id; // Return the ID for optimistic updates
+      return id; 
     },
     onSuccess: (deletedId) => {
-      // Immediately update the cache by filtering out the deleted service
       queryClient.setQueryData<Service[]>(["/api/services"], (oldData) => {
         if (!oldData) return [];
         return oldData.filter(service => service.id !== deletedId);
       });
-      
-      // Also update featured services
+
       queryClient.invalidateQueries({ queryKey: ["/api/services/featured"] });
-      
-      // Still invalidate to ensure consistency with server
+
       queryClient.invalidateQueries({ queryKey: ["/api/services"] });
-      
+
       setIsDeleteDialogOpen(false);
       toast({
         title: "Service deleted",
@@ -244,16 +240,16 @@ export default function Services() {
           onClick={handleOpenCreateDialog}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 011-1z" clipRule="evenodd" />
           </svg>
           Add New Service
         </Button>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {isLoading ? (
           <div className="col-span-full text-center py-12">
-            <div className="animate-pulse">Loading services...</div>
+            <LoadingSpinner />
           </div>
         ) : services?.length === 0 ? (
           <div className="col-span-full text-center py-12">
@@ -262,12 +258,7 @@ export default function Services() {
         ) : (
           services?.map((service) => (
             <div key={service.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="relative h-48">
-                <img 
-                  src={service.imageUrl} 
-                  alt={service.name} 
-                  className="w-full h-full object-cover" 
-                />
+              <div className="bg-secondary bg-opacity-5 p-6 relative">
                 <div className="absolute top-3 right-3 flex space-x-2">
                   <Button 
                     variant="secondary" 
@@ -313,7 +304,7 @@ export default function Services() {
 
       {/* Create Service Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create New Service</DialogTitle>
             <DialogDescription>
@@ -367,19 +358,7 @@ export default function Services() {
                 />
               </div>
 
-              <FormField
-                control={createForm.control}
-                name="imageUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Image URL</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://example.com/image.jpg" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              
 
               <FormField
                 control={createForm.control}
@@ -435,7 +414,7 @@ export default function Services() {
 
       {/* Edit Service Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Service</DialogTitle>
             <DialogDescription>
@@ -489,19 +468,7 @@ export default function Services() {
                 />
               </div>
 
-              <FormField
-                control={editForm.control}
-                name="imageUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Image URL</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://example.com/image.jpg" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              
 
               <FormField
                 control={editForm.control}
