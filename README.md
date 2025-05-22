@@ -6,25 +6,21 @@
 
 <div align="center">
 
-[![Language](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript)]()
-[![Last Commit](https://img.shields.io/github/last-commit/undefined/MassageHaven?style=for-the-badge)](https://github.com/undefined/MassageHaven/commits)
+[![License](https://img.shields.io/badge/license-Not%20Specified-lightgrey?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
+
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)]()
+
+*Repository statistics will be available once the project is published to GitHub*
+
 </div>
 
 ## Description
 
-This is a TypeScript project created by undefined.
+This is a TypeScript project with modern architecture and best practices.
 
 ### About This Project
 
-This repository contains the source code for MassageHaven, a web application built with TypeScript.
-
-### Key Features
-
-- Modern and intuitive user interface
-- Efficient and scalable architecture
-- Comprehensive documentation
-- Robust error handling
-
+MassageHaven is a Massage service/spa booking platform developed with Node.js and powered by PostgreSQL. The system provides article publishing, content organization, appointment scheduling, service selection, customer management, delivering a comprehensive solution for users.
 
 ## Installation
 
@@ -50,9 +46,11 @@ myInstance.start();
 
 ## Features
 
-- Feature 1
-- Feature 2
-- Feature 3
+- Comprehensive test suite
+- Responsive design for all devices
+- Fast and efficient server-side rendering
+- Modular architecture for easy maintenance
+
 
 ## Contributing
 
